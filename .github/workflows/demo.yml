@@ -9,12 +9,22 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
+      
+      - name: cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: deps-node-modules-$ {{ hashFiles('**/package-lock.json') }}
+
       - name: Install dependencies
         run: npm ci
+
       - name: Lint code
         run: npm run lint
+
       - name: Test code
         run: npm run test
+        
   build:
     needs: test
     runs-on: ubuntu-latest
@@ -55,6 +65,6 @@ jobs:
 
       - name: output filename
         run: echo "$ {{ needs.build.outputs.script-file }}"
-        
+
       - name: Deploy
         run: echo "Deploying..."
